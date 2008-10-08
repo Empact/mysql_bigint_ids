@@ -4,6 +4,8 @@ Version 0.3, November 08, 2008
   I decided to fork project for myself since there is no way to use
   bigints as ID for models
 
+* schema_dumper.rb is adjusted in accordance with Rails 2.1
+
 Version 0.2, September 14, 2007
 Improvements based on patches submitted by Tomasz Wegrzanowski
 
