@@ -1,0 +1,7 @@
+author: Steven Hammond
+summary: bigint support for MySQL migrations
+homepage: http://www.northpub.com/pages/mysql_bigint
+plugin: http://svn.northpub.com/mysql_bigint
+license: MIT
+version: 0.2
+rails_version: 1.2+

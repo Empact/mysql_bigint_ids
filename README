@@ -1,0 +1,77 @@
+:title:MySQL Bigint Rails Plugin
+= MySQL Bigint Rails Plugin
+
+== Summary
+This plugin changes the way ActiveRecord interacts with MySQL using the limit parameter
+and integer columns. While most databases seem to automatically adjust the size 
+(in bytes) of an integer column to fit the data stored in it. In these databases
+the limit parameter sets an upper bound on the size of the integer column. MySQL
+uses different integer types to reflect the maximum value _expected_ in the
+column. The limit parameter specifies the number of characters that will be returned
+with the column value, padded with spaces if necessary.
+
+This plugin allows MySQL to work more like other databases in this regard. Use
+in a migration to the :limit parameter to specify the number of bytes used in
+the column.
+
+=== Interactions with other databases
+This plugin has had extremely limited testing with other databases, but I believe
+that it should work. Limits on integer columns should as before and the :use_big_id
+option will be ignored.
+
+If you find that this plugin doesn't work with some other database, then let me
+know. Better still, sumit a patch that makes it work.
+
+=== History
+This plugin was originally submitted as a Rails patch, #4353. It is needed if you
+are using MySQL with my game_dsl plugin http://www.northpub.com/pages/game_dsl,
+so I made it into a plugin for use until the patch is accepted. It is also available
+for backwards compatibility.
+
+This plugin should work more transparently than the patch. These improvement will
+be rolled into my patch in the very near future.
+
+== Installation
+
+This plugin can be installed with either of the following commands:
+
+    ruby script/plugin install http://svn.northpub.com/plugins/mysql_bigint
+    ruby script/plugin install mysql_bigint
+	
+== Usage
+
+=== Integer Columns
+
+There isn't any additional syntax needed to use this plugin on integer columns,
+in MySQL. Instead the :limit parameter now specifics the number of bytes expected
+and smallest MySQL type capable of suppporting that many bytes will be used, up to
+a maximum of 8 bytes. For example...
+
+    t.column "col1", :integer, :limit => 1, :null=> false # uses MySQL tinyint
+    t.column "col2", :integer, :limit => 3, :null=> false # uses MySQL mediumint
+    t.column "col3", :integer, :limit => 4, :null=> false # uses MySQL int
+    t.column "col4", :integer, :limit => 5, :null=> false # uses MySQL bigint	
+    t.column "col5", :integer, :limit => 8, :null=> false # uses MySQL bigint
+    t.column "col6", :integer, :limit => 12, :null=> false # uses MySQL bigint which still holds 8-bytes	
+
+=== Primary Keys
+
+You can also use bigint's as primary keys with this plugin. This does require a bit
+of syntax. Add the :use_big_id option to the create_table statement as shown below.
+
+    create_table :random_numbers, :use_big_id => true, :force => true do |t|
+
+=== Future Work
+
+Not much. I've got a bunch of tests that were submitted with the original patch that
+I should figure out how to extract from there to put with this plugin. I also need
+to update the original patch with a couple of improvements I made while putting this
+plugin together.
+
+== Submitting Bug reports, patches or improvements
+
+I welcome your feedback, bug reports, patches and improvements. Please e-mail these
+to 
+    shammond at northpub.com
+	
+with [mysqlbigint] in the subject line. I'll get back to you as soon as I can.

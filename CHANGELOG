@@ -1,0 +1,16 @@
+Version 0.3, November 08, 2008
+
+* Project forked as https://github.com/gumayunov/mysql_bigint/tree
+  I decided to fork project for myself since there is no way to use
+  bigints as ID for models
+
+Version 0.2, September 14, 2007
+Improvements based on patches submitted by Tomasz Wegrzanowski
+
+1. Support for bigint foreign keys
+2. Schema dumper correctly identifies bigint primary keys
+3. :use_big_id now produces unsigned primary keys. This was necessary to support foreign keys, above ;-(
+4. Plugin is now transparent when run against database other than MySQL. Tested against Oracle and Postgres.
+
+Version 0.1
+Initial Release
