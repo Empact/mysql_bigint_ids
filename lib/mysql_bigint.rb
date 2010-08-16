@@ -68,15 +68,15 @@ module ActiveRecord
         if type == :decimal # ignore limit, use precison and scale
           precision ||= native[:precision]
           scale ||= native[:scale]
-          if precision
-            if scale
-              column_type_sql << "(#{precision}, #{scale})"
-            else
-              column_type_sql << "(#{precision})"
-            end
-          else
+          if !precision
             raise ArgumentError, "Error adding decimal column: precision cannot be empty if scale if specifed" if scale
           end
+          column_type_sql <<
+            if scale
+              "(#{precision}, #{scale})"
+            else
+              "(#{precision})"
+            end
           column_type_sql
         else
           limit ||= native[:limit]
@@ -90,13 +90,14 @@ module ActiveRecord
     class MysqlColumn # < Column #:nodoc:
       def extract_limit(sql_type)
         case sql_type
-          when /tinyint/ then return 1
-          when /smallint/ then return 2
-          when /mediumint/ then return 3
-          when /bigint/ then return 8
-          when /int/ then return 4
+        when /tinyint/ then 1
+        when /smallint/ then 2
+        when /mediumint/ then 3
+        when /bigint/ then 8
+        when /int/ then 4
+        else
+            super
         end
-        super
       end
     end
 
@@ -147,17 +148,17 @@ module ActiveRecord
       
       def native_database_type(type, limit=nil)
         if type == :integer
-          native_type = case limit
-                          when nil then real_native_database_types[:integer]
-                          when 1 then real_native_database_types[:tinyint]
-                          when 2  then real_native_database_types[:smallint]
-                          when 3 then real_native_database_types[:mediumint]
-                          when 4 then real_native_database_types[:integer]
-                          else real_native_database_types[:bigint]
-                        end
-        else native_type = real_native_database_types[type]
+          case limit
+            when nil then real_native_database_types[:integer]
+            when 1 then real_native_database_types[:tinyint]
+            when 2  then real_native_database_types[:smallint]
+            when 3 then real_native_database_types[:mediumint]
+            when 4 then real_native_database_types[:integer]
+            else real_native_database_types[:bigint]
+          end
+        else
+          real_native_database_types[type]
         end
-        native_type
       end
     end
   end
