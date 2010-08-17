@@ -33,6 +33,7 @@ module ActiveRecord
           spec = {}
           spec[:name]      = column.name.inspect
           spec[:type]      = column.type.to_s
+          spec[:unsigned]  = 'true' if column.sql_type.downcase.include?("unsigned")
           spec[:limit]     = column.limit.inspect if column.limit != @types[column.type][:limit] && column.type != :decimal
           spec[:precision] = column.precision.inspect if !column.precision.nil?
           spec[:scale]     = column.scale.inspect if !column.scale.nil?
@@ -43,7 +44,7 @@ module ActiveRecord
         end.compact
 
         # find all migration keys used in this table
-        keys = [:name, :limit, :precision, :scale, :default, :null] & column_specs.map(&:keys).flatten
+        keys = [:name, :limit, :precision, :scale, :default, :null, :unsigned] & column_specs.map(&:keys).flatten
 
         # figure out the lengths for each column based on above keys
         lengths = keys.map{ |key| column_specs.map{ |spec| spec[key] ? spec[key].length + 2 : 0 }.max }

@@ -2,7 +2,18 @@
 
 module ActiveRecord
   module ConnectionAdapters
+    class ColumnDefinition
+      attr_accessor :unsigned
+    end
+
     class TableDefinition
+      def column_with_unsigned(name, type, options = {})
+        column_without_unsigned(name, type, options).tap do |column|
+          column[name].unsigned = options[:unsigned]
+        end
+      end
+      alias_method_chain :column, :unsigned
+
       # Appends a primary key definition to the table definition.
       # Can be called multiple times, but this is probably not a good idea.
       # Changed to support the use of bigints as the primary key
@@ -42,6 +53,14 @@ module ActiveRecord
         execute create_sql
       end
       alias_method_chain :create_table, :mysql_bigint
+
+      def add_column_options_with_unsigned!(sql, options)
+        if options[:unsigned] || (options[:column] && options[:column].unsigned)
+          sql << " UNSIGNED"
+        end
+        add_column_options_without_unsigned!(sql, options)
+      end
+      alias_method_chain :add_column_options!, :unsigned
 
       # def type_to_sql(type, limit = nil) #:nodoc:
       # 	      mysql_integer_types = %w{tinyint smallint mediumint integer bigint}
