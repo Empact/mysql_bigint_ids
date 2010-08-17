@@ -1,3 +1,8 @@
+Version 0.4, August 16, 2010
+
+* Add supports for all primary key types via they :primary_key => {:name => '', :type => ''} table option
+* Add support for unsigned integer types via the :unsigned => true/false column option, with a bit of help from: http://github.com/no6v/mysql_uint/
+
 Version 0.3, November 08, 2008
 
 * Project forked as https://github.com/gumayunov/mysql_bigint/tree
