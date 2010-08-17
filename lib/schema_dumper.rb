@@ -15,10 +15,12 @@ module ActiveRecord
         tbl.print "  create_table #{table.inspect}"
         primary_key_column = columns.detect { |c| c.name == pk }
         if primary_key_column
-          if pk != 'id'
-            tbl.print %Q(, :primary_key => "#{pk}")
+          primary_key_options = {}
+          primary_key_options[:name] = pk if pk != 'id'
+          primary_key_options[:type] = primary_key_column.sql_type unless primary_key_column.sql_type =~ /int\(11\)/
+          if primary_key_options.present?
+            tbl.print %Q(, :primary_key => #{primary_key_options.inspect})
           end
-          tbl.print %Q(, :use_big_id => true) if primary_key_column.sql_type =~ /bigint/
         else
           tbl.print ", :id => false"
         end

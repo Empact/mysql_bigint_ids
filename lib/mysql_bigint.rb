@@ -6,12 +6,14 @@ module ActiveRecord
       # Appends a primary key definition to the table definition.
       # Can be called multiple times, but this is probably not a good idea.
       # Changed to support the use of bigints as the primary key
-      def primary_key_with_mysql_bigint(name, use_big_id = false)
+      def primary_key_with_mysql_bigint(name, type = :primary_key)
         return primary_key_without_mysql_bigint(name) unless @base.class.to_s =~ /mysql/i
-        # Use :big_primary_key if it is specified and if it exists for the
-        # current adapter.
-        key_type = ( use_big_id && !native[:big_primary_key].nil? ) ? :big_primary_key : :primary_key
-        column(name, native[key_type])
+
+        type = native.fetch(type) do
+          options = 'DEFAULT NULL auto_increment ' if type =~ /int/
+          "#{type} #{options}PRIMARY KEY"
+        end
+        column(name, type)
       end     
       alias_method_chain :primary_key, :mysql_bigint
     end
@@ -20,8 +22,12 @@ module ActiveRecord
       def create_table_with_mysql_bigint(name, options = {}, &blk)
         return create_table_without_mysql_bigint(name, options, &blk) unless @connection.class.to_s =~ /mysql/i
         
+        unless options[:primary_key].respond_to?(:to_hash)
+          options[:primary_key] = {:name => options[:primary_key], :type => :primary_key}
+        end
+
         table_definition = TableDefinition.new(self)
-        table_definition.primary_key(options[:primary_key] || "id", options[:use_big_id] || false) unless options[:id] == false
+        table_definition.primary_key(options[:primary_key][:name] || "id", options[:primary_key][:type] || :primary_key) unless options[:id] == false
 
         yield table_definition
 
