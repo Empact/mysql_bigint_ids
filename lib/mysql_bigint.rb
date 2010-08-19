@@ -60,6 +60,7 @@ module ActiveRecord
           limit = nil if mysql_integer_types.include? native[:name] # mysql doesn't use limit to indicate bytes of storage.
                 					      # Need to reassign native representation below.
         end
+        column_type_sql = native.respond_to?(:to_hash) ? native.to_hash[:name] : native
         if type == :decimal # ignore limit, use precison and scale
           precision ||= native[:precision]
           scale ||= native[:scale]
