@@ -20,14 +20,11 @@ module ActiveRecord
       
       def type_to_sql(type, *args) #:nodoc:
         limit, precision, scale = *args
-        
-        mysql_integer_types = %w{tinyint smallint mediumint integer bigint}
+
         if self.class.method_defined? :native_database_type
           native = native_database_types[type]
         else
           native = native_database_type(type, limit)
-          limit = nil if mysql_integer_types.include? native[:name] # mysql doesn't use limit to indicate bytes of storage.
-                					      # Need to reassign native representation below.
         end
         column_type_sql = native.respond_to?(:to_hash) ? native.to_hash[:name] : native
         if type == :decimal # ignore limit, use precison and scale
