@@ -172,20 +172,6 @@ module ActiveRecord
       end
     end
 
-    class MysqlColumn # < Column #:nodoc:
-      def extract_limit(sql_type)
-        case sql_type
-        when /tinyint/ then 1
-        when /smallint/ then 2
-        when /mediumint/ then 3
-        when /bigint/ then 8
-        when /int/ then 4
-        else
-            super
-        end
-      end
-    end
-
     class MysqlAdapter < AbstractAdapter
       include BigIntAdpterSupport, UnsignedAdapterSupport
     end
