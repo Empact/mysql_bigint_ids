@@ -26,7 +26,7 @@ module ActiveRecord
         else
           native = native_database_type(type, limit)
         end
-        column_type_sql = native.respond_to?(:to_hash) ? native.to_hash[:name] : native
+        column_type_sql = native.respond_to?(:to_hash) ? native.to_hash[:name].dup : native
         if type == :decimal # ignore limit, use precison and scale
           precision ||= native[:precision]
           scale ||= native[:scale]
