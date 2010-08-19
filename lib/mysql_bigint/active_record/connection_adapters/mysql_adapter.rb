@@ -130,7 +130,7 @@ module ActiveRecord
     end
 
     module UnsignedAdapterSupport
-      def add_column_options(sql, options)
+      def add_column_options!(sql, options)
         if options[:unsigned] || (options[:column] && options[:column].unsigned)
           sql << " UNSIGNED"
         end
