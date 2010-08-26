@@ -21,11 +21,14 @@ module ActiveRecord
       def type_to_sql(type, *args) #:nodoc:
         limit, precision, scale = *args
 
-        if self.class.method_defined? :native_database_type
-          native = native_database_types[type]
-        else
-          native = native_database_type(type, limit)
-        end
+        native =
+          if type.is_a?(String)
+            type
+          elsif self.class.method_defined? :native_database_type
+            native_database_types[type]
+          else
+            native_database_type(type, limit)
+          end
         column_type_sql = native.respond_to?(:to_hash) ? native.to_hash[:name].dup : native
         if type == :decimal # ignore limit, use precison and scale
           precision ||= native[:precision]
